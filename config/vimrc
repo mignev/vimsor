@@ -1,0 +1,539 @@
+" Modern Vim Configuration - Sublime-like experience
+" Backup of old config: vimrc.backup
+
+"------------------------------------------------------------------------------
+" VIM-PLUG (run :PlugInstall after first launch)
+"------------------------------------------------------------------------------
+call plug#begin('~/.vim/plugged')
+
+" File navigation
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+Plug 'preservim/nerdtree', { 'on': 'NERDTreeToggle' }
+
+" Multi-cursor (Sublime Cmd+D style)
+Plug 'mg979/vim-visual-multi', {'branch': 'master'}
+
+" Editing enhancements
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-surround'
+Plug 'jiangmiao/auto-pairs'
+
+" Git
+Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
+
+" Status line
+Plug 'itchyny/lightline.vim'
+
+" Color schemes
+Plug 'ayu-theme/ayu-vim'
+
+" Syntax & Languages
+Plug 'sheerun/vim-polyglot'
+
+
+call plug#end()
+
+"------------------------------------------------------------------------------
+" CORE SETTINGS
+"------------------------------------------------------------------------------
+set nocompatible
+set encoding=utf-8
+set fileencoding=utf-8
+
+" Performance
+set lazyredraw
+set ttyfast
+set updatetime=100
+set timeoutlen=500
+
+" Fix terminal escape sequence leaks
+set t_RV=
+set t_u7=
+
+" iTerm2 true color support
+let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+
+" No backup files (use git instead)
+set nobackup
+set nowritebackup
+set noswapfile
+
+" Persistent undo
+set undofile
+set undodir=~/.vim/undo//
+
+" Buffers & Files
+set hidden
+set autoread
+
+"------------------------------------------------------------------------------
+" UI SETTINGS
+"------------------------------------------------------------------------------
+syntax enable
+set t_Co=256
+
+set termguicolors
+
+" Mouse support - click to select pane, drag to resize
+set mouse=a
+
+let ayucolor="mirage"
+silent! colorscheme ayu
+
+set number
+set cursorline
+set signcolumn=yes
+set showmatch
+set nowrap
+set scrolloff=8
+set sidescrolloff=8
+
+" Status line
+set laststatus=2
+set noshowmode
+set ruler
+set showcmd
+
+" Splits
+set splitbelow
+set splitright
+
+" Show invisible characters
+set list listchars=tab:→\ ,trail:·,extends:›,precedes:‹
+
+"------------------------------------------------------------------------------
+" SEARCH
+"------------------------------------------------------------------------------
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
+
+"------------------------------------------------------------------------------
+" INDENTATION
+"------------------------------------------------------------------------------
+filetype plugin indent on
+set autoindent
+set smartindent
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
+set expandtab
+
+"------------------------------------------------------------------------------
+" COMPLETION
+"------------------------------------------------------------------------------
+set wildmenu
+set wildmode=list:full
+set wildignore+=*.pyc,*.o,*.obj,*.exe,*.dll
+set wildignore+=*.jpg,*.jpeg,*.png,*.gif,*.bmp
+set wildignore+=*.DS_Store,*.swp,*.swo
+set wildignore+=*/.git/*,*/node_modules/*,*/venv/*
+set completeopt=menuone,noselect
+
+"------------------------------------------------------------------------------
+" CLIPBOARD (System clipboard integration)
+"------------------------------------------------------------------------------
+set clipboard=unnamed
+
+"------------------------------------------------------------------------------
+" SUBLIME-LIKE KEY BINDINGS
+"------------------------------------------------------------------------------
+let mapleader = ","
+
+" Cmd+S: Save (works in MacVim GUI, use Ctrl in terminal)
+nnoremap <D-s> :w<CR>
+inoremap <D-s> <Esc>:w<CR>a
+nnoremap <C-s> :w<CR>
+inoremap <C-s> <Esc>:w<CR>a
+
+" Cmd+P / Ctrl+P: Fuzzy file finder
+nnoremap <D-p> :Files<CR>
+nnoremap <C-p> :Files<CR>
+nnoremap <Leader>p :Files<CR>
+
+" Cmd+Shift+P / Ctrl+Shift+P: Command palette
+nnoremap <D-P> :Commands<CR>
+nnoremap <C-S-p> :Commands<CR>
+nnoremap <Leader>P :Commands<CR>
+
+" Cmd+Shift+F / Ctrl+Shift+F: Search in project
+nnoremap <D-F> :Rg<CR>
+nnoremap <C-S-f> :Rg<CR>
+nnoremap <Leader>f :Rg<CR>
+
+" Cmd+B: Toggle sidebar
+nnoremap <D-b> :NERDTreeToggle<CR>
+nnoremap <C-b> :NERDTreeToggle<CR>
+nnoremap <Leader>b :NERDTreeToggle<CR>
+
+" Cmd+/: Toggle comment
+nnoremap <D-/> :Commentary<CR>
+vnoremap <D-/> :Commentary<CR>
+nnoremap <C-_> :Commentary<CR>
+vnoremap <C-_> :Commentary<CR>
+nnoremap <Leader>/ :Commentary<CR>
+vnoremap <Leader>/ :Commentary<CR>
+
+" Cmd+D: Multi-cursor (handled by vim-visual-multi)
+" Default: Ctrl+n to add cursor at next match
+
+" Cmd+L: Select line
+nnoremap <D-l> V
+nnoremap <Leader>l V
+
+" Cmd+Shift+D: Duplicate line
+nnoremap <D-D> yyp
+inoremap <D-D> <Esc>yypi
+nnoremap <Leader>d yyp
+
+" Cmd+Shift+K: Delete line
+nnoremap <D-K> dd
+inoremap <D-K> <Esc>ddi
+nnoremap <Leader>k dd
+
+" Alt+Up/Down: Move line up/down
+nnoremap <A-Up> :m .-2<CR>==
+nnoremap <A-Down> :m .+1<CR>==
+inoremap <A-Up> <Esc>:m .-2<CR>==gi
+inoremap <A-Down> <Esc>:m .+1<CR>==gi
+vnoremap <A-Up> :m '<-2<CR>gv=gv
+vnoremap <A-Down> :m '>+1<CR>gv=gv
+
+" Also map for terminal (Option key sends Escape sequences)
+nnoremap <Esc>[A :m .-2<CR>==
+nnoremap <Esc>[B :m .+1<CR>==
+
+" Cmd+[ / Cmd+]: Indent/outdent
+nnoremap <D-[> <<
+nnoremap <D-]> >>
+vnoremap <D-[> <gv
+vnoremap <D-]> >gv
+vnoremap < <gv
+vnoremap > >gv
+
+" Cmd+W: Close buffer
+nnoremap <D-w> :bd<CR>
+nnoremap <Leader>w :bd<CR>
+
+" Cmd+N: New buffer
+nnoremap <D-n> :enew<CR>
+nnoremap <Leader>n :enew<CR>
+
+" Cmd+T: New tab
+nnoremap <D-t> :tabnew<CR>
+nnoremap <Leader>t :tabnew<CR>
+
+" Cmd+Shift+T: Reopen closed (go to previous buffer)
+nnoremap <D-T> :e#<CR>
+
+" Tab navigation
+nnoremap <C-Tab> :tabnext<CR>
+nnoremap <C-S-Tab> :tabprevious<CR>
+nnoremap <D-1> 1gt
+nnoremap <D-2> 2gt
+nnoremap <D-3> 3gt
+nnoremap <D-4> 4gt
+nnoremap <D-5> 5gt
+
+" Tab navigation (use ,] and ,[ or gt/gT)
+nnoremap <Leader>] :tabnext<CR>
+nnoremap <Leader>[ :tabprevious<CR>
+
+" Cmd+F: Search in file
+nnoremap <D-f> /
+nnoremap <C-f> /
+
+" Clear search highlight
+nnoremap <Esc><Esc> :nohlsearch<CR>
+nnoremap <Leader><Space> :nohlsearch<CR>
+
+" Cmd+A: Select all
+nnoremap <D-a> ggVG
+inoremap <D-a> <Esc>ggVG
+
+" Cmd+Z: Undo / Cmd+Shift+Z: Redo
+nnoremap <D-z> u
+inoremap <D-z> <Esc>ui
+nnoremap <D-Z> <C-r>
+inoremap <D-Z> <Esc><C-r>i
+
+"------------------------------------------------------------------------------
+" FAST NAVIGATION
+"------------------------------------------------------------------------------
+" Faster scrolling
+nnoremap <C-j> 5j
+nnoremap <C-k> 5k
+vnoremap <C-j> 5j
+vnoremap <C-k> 5k
+
+" Split navigation
+nnoremap <C-h> <C-w>h
+nnoremap <C-l> <C-w>l
+
+" Buffer navigation
+nnoremap <Leader>bn :bnext<CR>
+nnoremap <Leader>bp :bprevious<CR>
+nnoremap <Leader>bl :Buffers<CR>
+
+"------------------------------------------------------------------------------
+" PLUGIN SETTINGS
+"------------------------------------------------------------------------------
+
+" NERDTree
+let NERDTreeShowHidden=1
+let NERDTreeIgnore=['\.pyc$', '\.git$', '\.DS_Store$', 'node_modules']
+let NERDTreeMinimalUI=1
+let NERDTreeCustomOpenArgs={'file':{'where': 't'}}
+
+" FZF
+let g:fzf_layout = { 'down': '40%' }
+let g:fzf_preview_window = ['right:50%', 'ctrl-/']
+" Open files in new tab by default
+let g:fzf_action = {
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-s': 'split',
+  \ 'ctrl-v': 'vsplit',
+  \ 'enter': 'tab split' }
+
+" vim-visual-multi (multi-cursor)
+let g:VM_maps = {}
+let g:VM_maps['Find Under'] = '<C-n>'
+let g:VM_maps['Find Subword Under'] = '<C-n>'
+let g:VM_maps['Select All'] = '<Leader>A'
+let g:VM_maps['Skip Region'] = '<C-x>'
+
+" Lightline
+let g:lightline = {
+      \ 'colorscheme': 'ayu_mirage',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'gitbranch' ],
+      \             [ 'fileicon', 'filename', 'modified' ] ],
+      \   'right': [ [ 'lineinfo' ],
+      \              [ 'percent' ],
+      \              [ 'filetype' ] ]
+      \ },
+      \ 'component_function': {
+      \   'gitbranch': 'LightlineGitBranch',
+      \   'filename': 'LightlineFilename',
+      \   'fileicon': 'LightlineFileicon',
+      \   'filetype': 'LightlineFiletype',
+      \   'lineinfo': 'LightlineLineinfo',
+      \   'percent': 'LightlinePercent'
+      \ },
+      \ 'component': {
+      \   'modified': '%{&modified?"●":""}',
+      \   'readonly': '%{&readonly?"":""}',
+      \ },
+      \ 'component_type': {
+      \   'gitbranch': 'error',
+      \ },
+      \ }
+
+function! LightlineGitBranch()
+  let branch = FugitiveHead()
+  return branch !=# '' ? '⑂ ' . branch : ''
+endfunction
+
+function! LightlineFilename()
+  let filename = expand('%:t') !=# '' ? expand('%:t') : '[No Name]'
+  return '» ' . filename
+endfunction
+
+function! LightlineFileicon()
+  return ''
+endfunction
+
+function! LightlineFiletype()
+  return &filetype !=# '' ? '◆ ' . &filetype : ''
+endfunction
+
+function! LightlineLineinfo()
+  return '☰ ' . line('.') . ':' . col('.')
+endfunction
+
+function! LightlinePercent()
+  return '↕ ' . (100 * line('.') / line('$')) . '%'
+endfunction
+
+" GitGutter
+let g:gitgutter_sign_added = '+'
+let g:gitgutter_sign_modified = '~'
+let g:gitgutter_sign_removed = '-'
+
+"------------------------------------------------------------------------------
+" CLAUDE CODE INTEGRATION
+"------------------------------------------------------------------------------
+
+" Ask Claude about selected code or current file
+function! ClaudeAsk(prompt)
+  let l:tmpfile = tempname()
+  let l:selection = getline("'<", "'>")
+  call writefile(l:selection, l:tmpfile)
+  let l:cmd = 'claude -p "' . a:prompt . '" < ' . l:tmpfile
+  let l:result = system(l:cmd)
+  call delete(l:tmpfile)
+
+  " Open result in a new split
+  new
+  setlocal buftype=nofile bufhidden=wipe noswapfile
+  setlocal filetype=markdown
+  call setline(1, split(l:result, "\n"))
+  normal! gg
+endfunction
+
+" Ask Claude with a prompt (visual mode - uses selection)
+function! ClaudeAskVisual()
+  let l:prompt = input('Ask Claude: ')
+  if empty(l:prompt)
+    return
+  endif
+  call ClaudeAsk(l:prompt)
+endfunction
+
+" Claude edit: replace selection with Claude's response
+function! ClaudeEdit()
+  let l:prompt = input('Edit instruction: ')
+  if empty(l:prompt)
+    return
+  endif
+
+  let l:tmpfile = tempname()
+  '<,'>write! `=l:tmpfile`
+  let l:cmd = 'claude -p "' . l:prompt . '. Output ONLY the code, no explanation." < ' . l:tmpfile
+  let l:result = system(l:cmd)
+  call delete(l:tmpfile)
+
+  " Replace selection with result
+  '<,'>delete
+  let l:lines = split(l:result, "\n")
+  " Remove markdown code fences if present
+  if len(l:lines) > 0 && l:lines[0] =~ '^```'
+    let l:lines = l:lines[1:]
+  endif
+  if len(l:lines) > 0 && l:lines[-1] =~ '^```$'
+    let l:lines = l:lines[:-2]
+  endif
+  call append(line("'<") - 1, l:lines)
+endfunction
+
+" Claude explain current file
+function! ClaudeExplain()
+  let l:file = expand('%')
+  let l:cmd = 'claude -p "Explain this code concisely" < ' . shellescape(l:file)
+  let l:result = system(l:cmd)
+
+  new
+  setlocal buftype=nofile bufhidden=wipe noswapfile
+  setlocal filetype=markdown
+  call setline(1, split(l:result, "\n"))
+  normal! gg
+endfunction
+
+" Claude fix: ask to fix errors in selection
+function! ClaudeFix()
+  let l:tmpfile = tempname()
+  '<,'>write! `=l:tmpfile`
+  let l:cmd = 'claude -p "Fix any bugs or issues in this code. Output ONLY the fixed code, no explanation." < ' . l:tmpfile
+  let l:result = system(l:cmd)
+  call delete(l:tmpfile)
+
+  '<,'>delete
+  let l:lines = split(l:result, "\n")
+  if len(l:lines) > 0 && l:lines[0] =~ '^```'
+    let l:lines = l:lines[1:]
+  endif
+  if len(l:lines) > 0 && l:lines[-1] =~ '^```$'
+    let l:lines = l:lines[:-2]
+  endif
+  call append(line("'<") - 1, l:lines)
+endfunction
+
+" Open Claude Code in vertical side panel
+function! ClaudeChat()
+  vertical botright terminal ++cols=80 claude
+endfunction
+
+" Claude Keybindings
+vnoremap <Leader>ca :call ClaudeAskVisual()<CR>
+nnoremap <Leader>ce :call ClaudeExplain()<CR>
+vnoremap <Leader>cr :call ClaudeEdit()<CR>
+vnoremap <Leader>cf :call ClaudeFix()<CR>
+nnoremap <Leader>cc :call ClaudeChat()<CR>
+
+" Resize splits easily
+nnoremap <Leader>= :vertical resize +10<CR>
+nnoremap <Leader>- :vertical resize -10<CR>
+
+" Commands
+command! Claude call ClaudeChat()
+command! ClaudeExplain call ClaudeExplain()
+command! -range ClaudeAsk call ClaudeAskVisual()
+command! -range ClaudeEdit call ClaudeEdit()
+command! -range ClaudeFix call ClaudeFix()
+
+"------------------------------------------------------------------------------
+" FILE TYPE SPECIFIC
+"------------------------------------------------------------------------------
+augroup FileTypeSettings
+  autocmd!
+  " Python
+  autocmd FileType python setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab
+  autocmd FileType python setlocal textwidth=79
+
+  " JavaScript/TypeScript
+  autocmd FileType javascript,typescript,json setlocal tabstop=2 softtabstop=2 shiftwidth=2
+
+  " Makefiles need tabs
+  autocmd FileType make setlocal noexpandtab
+
+  " PHP/Drupal
+  autocmd BufNewFile,BufRead *.module,*.install,*.inc setlocal filetype=php
+augroup END
+
+"------------------------------------------------------------------------------
+" SPELLING CORRECTIONS (from your old config)
+"------------------------------------------------------------------------------
+iabbrev teh the
+iabbrev htis this
+iabbrev tihs this
+iabbrev sefl self
+iabbrev slef self
+iabbrev funciton function
+iabbrev funtion function
+iabbrev fucntion function
+iabbrev retunr return
+iabbrev reutrn return
+
+"------------------------------------------------------------------------------
+" USEFUL FUNCTIONS
+"------------------------------------------------------------------------------
+
+" Strip trailing whitespace on save
+function! StripTrailingWhitespace()
+  let l:save = winsaveview()
+  keeppatterns %s/\s\+$//e
+  call winrestview(l:save)
+endfunction
+autocmd BufWritePre * call StripTrailingWhitespace()
+
+" Quick edit vimrc
+nnoremap <Leader>ev :e $MYVIMRC<CR>
+nnoremap <Leader>sv :source $MYVIMRC<CR>
+
+" Toggle line numbers off for clean mouse copy
+nnoremap <Leader>nn :set number! signcolumn=no<CR>
+
+"------------------------------------------------------------------------------
+" GUI SETTINGS (MacVim)
+"------------------------------------------------------------------------------
+if has("gui_running")
+  set guifont=Monaco:h13
+  set guioptions-=T  " No toolbar
+  set guioptions-=r  " No scrollbar
+  set guioptions-=L  " No left scrollbar
+endif

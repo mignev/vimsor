@@ -1,0 +1,22 @@
+# Vim
+*.swp
+*.swo
+*~
+.netrwhist
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+
+# IDE
+.idea/
+.vscode/
+*.sublime-*
+
+# Local testing
+/test/
+/tmp/
